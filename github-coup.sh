@@ -78,10 +78,10 @@ do
 	found=1
 	nr=1
 	link="https://api.github.com$url?page=1&per_page=100"
-	tmp=/tmp/curlheaders.$RANDOM.$RANDOM.$RANDOM.$$
+	headerfile=/tmp/curlheaders.$RANDOM.$RANDOM.$RANDOM.$$
 	while [ "$link" != "" ]; do
 		echo Fetching repositories, $link
-		data=`curl --silent -D $tmp $curltoken $link`
+		data=`curl --silent -D $headerfile $curltoken $link`
 		if [ $? -ne 0 ]; then
 			echo curl failed fetching $link
 			break;
@@ -110,7 +110,8 @@ do
 				cloneorupdate $repo
 			done
 		fi
-		link=`cat $tmp | grep -o -e '<[^>]*>; rel="next"' | sed -e 's/<\([^>]*\)>.*/\1/'`
+		link=`cat $headerfile | grep -o -e '<[^>]*>; rel="next"' | sed -e 's/<\([^>]*\)>.*/\1/'`
+		rm $headerfile
 	done
 done
 
