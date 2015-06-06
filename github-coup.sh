@@ -6,9 +6,12 @@ user=GITHUBUSER
 token=ACCESSTOKEN
 urls="/users/$user/repos /users/$user/starred"
 
+# actions
+# all actions get the following parameter
+# $repo $repodir $repobasename $username
 # define an action after cloning
 actionafterclone(){
-	# e.g. git remote add myserver xxxx.xx:github/$repobasename  2>&1 > /dev/null
+	# e.g. git remote add myserver xxxx.xx:github/$3  2>&1 > /dev/null
 	return 
 }
 
@@ -40,16 +43,16 @@ cloneorupdate(){
 	if [ -d $repodir ]; then
 		echo update $repo
 		pushd $repodir > /dev/null
-		actiononold
+		actiononold $repo $repodir $repobasename $username
 		git remote add $username https://github.com/$username/$repobasename  2&>1 > /dev/null
-		actiononnew
+		actiononnew $repo $repodir $repobasename $username
 		popd > /dev/null
 	else
 		echo clone $repo into $targetdir
 		git clone https://github.com/$repo $repodir > /dev/null
 		pushd $repodir > /dev/null
-		actionafterclone
-		actiononnew
+		actionafterclone $repo $repodir $repobasename $username
+		actiononnew $repo $repodir $repobasename $username
 		popd > /dev/null
 	fi
 	echo done $repo
